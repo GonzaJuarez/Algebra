@@ -70,6 +70,28 @@ def imagen_por_escalar(imagen_gris: np.ndarray, alpha: float) -> np.ndarray:
     imagen_ajustada = np.clip(imagen_ajustada, 0, 255).astype(np.uint8)
     return imagen_ajustada
 
+def negativo_imagen(imagen):
+    try:
+        """
+        numpy.full_like(a, fill_value, dtype=None, order='K', subok=True, shape=None, *, device=None)[source]
+            Return a full array with the same shape and type as a given array.
+
+            Parameters:
+                a:array_like
+                The shape and data-type of a define these same attributes of the returned array.
+
+                fill_valuearray_like
+                Fill value.
+        """
+        #se utiliza np.full_like para hace una matriz igual a la de la imagen pero con todo 255 dentro 
+        matriz_auxiliar = np.full_like(imagen, 255)
+        
+        imagen_negativo = matriz_auxiliar - imagen
+        return imagen_negativo
+
+    except Exception as e:
+        print("Error al calcular el negativo", str(e))
+
 
 # Variables
 imagen1 = imread(imagen1_path)
@@ -92,6 +114,8 @@ imagen2_gris = convertir_a_escala_grises(imagen2_crop)
 
 imagen1_inversa = calcular_inversa_matriz(imagen1_gris)
 imagen2_inversa = calcular_inversa_matriz(imagen2_gris)
+
+imagen1_negativa = negativo_imagen(imagen1)
 
 # Prints
 print(f"Tamaño de la imagen 1: {imagen1.shape}")
@@ -174,4 +198,8 @@ imagen1_gris_escalar_bajo = imagen_por_escalar(imagen1_gris, 0.2)
 plt.subplot(2, 2, 1)
 plt.imshow(imagen1_gris_escalar_bajo, cmap='gray')
 plt.title(f'Imagen 1 - Escalar (α={0.2})')
+plt.show()
+
+plt.imshow(imagen1_negativa)
+plt.title("Imagen 1 negativa")
 plt.show()
