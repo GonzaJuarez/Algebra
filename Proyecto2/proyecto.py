@@ -70,6 +70,34 @@ def imagen_por_escalar(imagen_gris: np.ndarray, alpha: float) -> np.ndarray:
     imagen_ajustada = np.clip(imagen_ajustada, 0, 255).astype(np.uint8)
     return imagen_ajustada
 
+def voltear_imagen(imagen: np.ndarray) -> np.ndarray:
+    # Obtener las dimensiones de la imagen
+    if len(imagen.shape) == 3:
+        filas, columnas, canales = imagen.shape
+    elif len(imagen.shape) == 2:
+        filas, columnas = imagen.shape
+        canales = 1  # Asignamos 1 a canales en el caso de imágenes en escala de grises
+
+    # Crear la matriz identidad
+    identidad = np.eye(filas)
+
+    # Crear la matriz W
+    W = np.fliplr(identidad)
+
+    # Voltear la imagen utilizando la matriz W
+    imagen_volteada = np.zeros_like(imagen)
+
+    for i in range(filas):
+        for j in range(columnas):
+            if canales == 1:
+                # Para imágenes en escala de grises
+                imagen_volteada[i, j] = imagen[(filas - 1 - i), j]
+            else:
+                # Para imágenes RGB (3 canales)
+                imagen_volteada[i, j, :] = imagen[(filas - 1 - i), j, :]
+
+    return imagen_volteada
+
 def negativo_imagen(imagen):
     try:
         """
@@ -115,7 +143,12 @@ imagen2_gris = convertir_a_escala_grises(imagen2_crop)
 imagen1_inversa = calcular_inversa_matriz(imagen1_gris)
 imagen2_inversa = calcular_inversa_matriz(imagen2_gris)
 
-imagen1_negativa = negativo_imagen(imagen1)
+imagen1_gris_escalar_alto = imagen_por_escalar(imagen1_gris, 5)
+imagen1_gris_escalar_bajo = imagen_por_escalar(imagen1_gris, 0.2)
+
+imagen1_volteada = voltear_imagen(imagen1_gris)
+
+imagen1_negativa = negativo_imagen(imagen1_gris)
 
 # Prints
 print(f"Tamaño de la imagen 1: {imagen1.shape}")
@@ -188,18 +221,20 @@ plt.show()
 print(calcular_inversa_matriz(imagen1_gris))
 print(calcular_inversa_matriz(imagen2_gris))
 
-imagen1_gris_escalar_alto = imagen_por_escalar(imagen1_gris, 5)
 plt.subplot(2, 2, 1)
 plt.imshow(imagen1_gris_escalar_alto, cmap='gray')
 plt.title(f'Imagen 1 - Escalar (α={5})')
 plt.show()
 
-imagen1_gris_escalar_bajo = imagen_por_escalar(imagen1_gris, 0.2)
 plt.subplot(2, 2, 1)
 plt.imshow(imagen1_gris_escalar_bajo, cmap='gray')
 plt.title(f'Imagen 1 - Escalar (α={0.2})')
 plt.show()
 
-plt.imshow(imagen1_negativa)
+plt.imshow(imagen1_volteada, cmap='gray')
+plt.title("Imagen 1 volteada")
+plt.show()
+
+plt.imshow(imagen1_negativa, cmap='gray')
 plt.title("Imagen 1 negativa")
 plt.show()
