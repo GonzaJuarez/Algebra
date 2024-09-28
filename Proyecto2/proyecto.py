@@ -4,10 +4,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import os
 
-# Get the directory of the current Python file
 base_dir = os.path.dirname(__file__)
 
-# Construct relative paths for the images
 imagen1_path = os.path.join(base_dir, 'imagenes', 'lobo.jpg')
 imagen2_path = os.path.join(base_dir, 'imagenes', 'perico.jpg')
 imagen1_crop_path = os.path.join(base_dir, 'imagenes', 'lobo_crop.jpg')
@@ -63,37 +61,30 @@ def calcular_inversa_matriz(imagen_gris: np.ndarray) -> np.ndarray:
         print("La matriz no tiene inversa.")
         return None
 
-def imagen_por_escalar(imagen_gris: np.ndarray, alpha: float) -> np.ndarray:
-    # Multiplicar la imagen por el escalar alpha
-    imagen_ajustada = imagen_gris * alpha
-    # Asegurarse de que los valores están en el rango 0-255
+def imagen_por_escalar(imagen_gris: np.ndarray, escalar: float) -> np.ndarray:
+    imagen_ajustada = imagen_gris * escalar
     imagen_ajustada = np.clip(imagen_ajustada, 0, 255).astype(np.uint8)
     return imagen_ajustada
+# Termina ajustando el contraste de la imagen.
 
 def voltear_imagen(imagen: np.ndarray) -> np.ndarray:
-    # Obtener las dimensiones de la imagen
     if len(imagen.shape) == 3:
         filas, columnas, canales = imagen.shape
     elif len(imagen.shape) == 2:
         filas, columnas = imagen.shape
-        canales = 1  # Asignamos 1 a canales en el caso de imágenes en escala de grises
+        canales = 1
 
-    # Crear la matriz identidad
     identidad = np.eye(filas)
 
-    # Crear la matriz W
     W = np.fliplr(identidad)
 
-    # Voltear la imagen utilizando la matriz W
     imagen_volteada = np.zeros_like(imagen)
 
     for i in range(filas):
         for j in range(columnas):
             if canales == 1:
-                # Para imágenes en escala de grises
                 imagen_volteada[i, j] = imagen[(filas - 1 - i), j]
             else:
-                # Para imágenes RGB (3 canales)
                 imagen_volteada[i, j, :] = imagen[(filas - 1 - i), j, :]
 
     return imagen_volteada
